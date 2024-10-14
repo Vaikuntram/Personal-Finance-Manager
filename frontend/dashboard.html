@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .form input {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .form button {
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .form button:hover {
+            background-color: #4cae4c;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .item {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            margin-bottom: 5px;
+        }
+
+        #transactions-container, #budgets-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 3px;
+            background-color: #fafafa;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            padding-top: 20px;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+
+        .sidebar a.active {
+            background-color: #4cae4c;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+        }
+
+        .logout-link {
+            display: inline-block; 
+            padding: 10px 20px;
+            background-color: #f44336; 
+            color: white;
+            text-decoration: none; 
+            border-radius: 3px;
+            margin: 10px 15px;
+            font-size: 16px;
+        }
+
+        .logout-link:hover {
+            background-color: #d32f2f; 
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%; 
+            padding: 10px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+        }
+        
+        button {
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 15px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            transition: background-color 0.3s; 
+        }
+
+        button:hover {
+            background-color: #0056b3; 
+        }
+
+        table {
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+        }
+
+        th, td {
+            padding: 10px; 
+            text-align: left; 
+            border-bottom: 1px solid #ddd; 
+        }
+
+        th {
+            background-color: #f2f2f2; 
+            font-weight: bold; 
+        }
+
+        tr:hover {
+            background-color: #f9f9f9; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard</h1>
+
+    <div class="sidebar">
+        <a href="#" onclick="showSection('transactions')">Transactions</a>
+        <a href="#" onclick="showSection('budgets')">Budgets</a>
+        <a href="#" onclick="showSection('analytics')">Analytics</a>
+        <a href="#" onclick="showSection('recurring')">Recurring Expenses</a>
+        <a href="#" onclick="showSection('profile')">Profile</a>
+        <a href="#" id="logoutLink" class="logout-link">Logout</a>
+    </div>
+
+    <div class="content">
+        <div id="transactions" class="section">
+            <h2>Transactions</h2>
+            <form id="addTransactionForm" class="form">
+                <input type="text" id="transactionCategory" placeholder="Category" required>
+                <input type="number" id="transactionAmount" placeholder="Amount" required>
+                <button type="submit">Add Transaction</button>
+            </form>
+            <div id="transactions-container"></div>
+        </div>
+
+        <div id="budgets" class="section">
+            <h2>Budgets</h2>
+            <form id="add-budget-form" class="form">
+                <input type="text" id="budget-category" placeholder="Category" required />
+                <input type="number" id="budget-limit" placeholder="Limit" required />
+                <button type="submit">Add Budget</button>
+            </form>
+            <div id="budgets-container"></div>
+        </div>
+
+        <div id="analytics" class="section">
+            <h1>Analytics</h1>
+        
+            <h2>Budget Overview</h2>
+            <canvas id="budgetChart"></canvas>
+        
+            <h2>Transactions Overview</h2>
+            <canvas id="transactionChart"></canvas>
+        </div>
+
+        <div id="recurring" class="section">
+            <h2>Recurring Expenses</h2>
+            <form id="addRegularExpenseForm">
+                <h2>Add Regular Expense</h2>
+                <input type="text" id="expense-name" placeholder="Expense Name" required />
+                <input type="number" id="expense-amount" placeholder="Amount" required />
+                <select id="expense-type" required>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+                <input type="text" id="expense-category" placeholder="Category (e.g., Rent, Salary, Utilities)" required />
+                <button type="submit">Add Regular Expense</button>
+            </form>
+        
+            <div id="regular-expenses-container">
+                <h3>Regular Expenses</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            <th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody id="regular-expenses-list">
+                    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="profile" class="section">
+            <h2>User Profile</h2>
+            <div id="user-info">
+                <p><strong>Name:</strong> <span id="userName">Vaikunt Ramakrishnan</span></p>
+                <p><strong>Email:</strong> <span id="userEmail">vaikuntramakrishnan@gmail.com</span></p>
+                <p><strong>Phone:</strong> <span id="userPhone">123-456-7890</span></p>
+            </div>
+
+            <h3>Edit Profile</h3>
+            <form id="editProfileForm" class="form">
+                <input type="text" id="editName" placeholder="New Name" required>
+                <input type="email" id="editEmail" placeholder="New Email" required>
+                <input type="text" id="editPhone" placeholder="New Phone">
+                <button type="submit">Update Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="analytics.js"></script> 
+    <script src="script.js"></script>
+    <script>
+        function showSection(sectionId) {
+            
+            var sections = document.querySelectorAll('.section');
+            sections.forEach(function(section) {
+                section.style.display = 'none';
+            });
+
+            
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('transactions'); 
+            loadTransactions();
+            loadBudgets();
+            loadRegularExpense();
+        });
+
+        document.getElementById('editProfileForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            const updatedName = document.getElementById('editName').value;
+            const updatedEmail = document.getElementById('editEmail').value;
+            const updatedPhone = document.getElementById('editPhone').value;
+
+            document.getElementById('userName').textContent = updatedName;
+            document.getElementById('userEmail').textContent = updatedEmail;
+            document.getElementById('userPhone').textContent = updatedPhone;
+
+            
+            alert('Profile updated successfully!');
+        });
+
+    </script>
+
+</body>
+</html>

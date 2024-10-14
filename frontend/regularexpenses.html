@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Dashboard</h1>
+
+    <!-- Form to add regular expenses -->
+    <form id="addRegularExpenseForm">
+        <h2>Add Regular Expense</h2>
+        <input type="text" id="expense-name" placeholder="Expense Name" required />
+        <input type="number" id="expense-amount" placeholder="Amount" required />
+        <select id="expense-type" required>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+        </select>
+        <input type="text" id="expense-category" placeholder="Category (e.g., Rent, Salary, Utilities)" required />
+        <button type="submit">Add Regular Expense</button>
+    </form>
+
+    <!-- Display section for regular expenses -->
+    <div id="regular-expenses-container">
+        <h3>Regular Expenses</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody id="regular-expenses-list">
+                <!-- Regular expenses will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
