@@ -131,7 +131,7 @@ app.get('/api/budgets', async (req, res) => {
     console.log('Fetching budgets for userId:', userId); // This should log in the console when this route is hit
     try {
         const budgets = await Budget.find({ userId }); // Ensure to filter budgets by userId
-        const transactions = await Transaction.find({ userId: req.user.id });
+        //const transactions = await Transaction.find({ userId: req.user.id });
 
         res.json(budgets);
     } catch (error) {
